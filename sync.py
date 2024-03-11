@@ -104,14 +104,14 @@ try:
             src = src_folder + "/" + file
             dst = bk_folder + "/" + file
             if os.path.isfile(dst):
-                if os.path.getsize(src) > os.path.getsize(dst) or os.stat(src).st_mtime > os.stat(dst).st_mtime:
+                if os.path.getsize(src) > os.path.getsize(dst) or os.stat(src).st_mtime != os.stat(dst).st_mtime:
                     os.remove(dst)
                     shutil.copy2(src,
                                  dst)
 
                     log_print_update()
             else:
-                if get_dir_size(src) > get_dir_size(dst) or os.stat(src).st_mtime > os.stat(dst).st_mtime:
+                if get_dir_size(src) > get_dir_size(dst) or os.stat(src).st_mtime != os.stat(dst).st_mtime:
                     shutil.rmtree(dst)
                     shutil.copytree(src,
                                     dst)
