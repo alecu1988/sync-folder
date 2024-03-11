@@ -5,6 +5,20 @@ import sys
 from datetime import datetime
 
 
+def get_last_modified_date(dir_path):
+    latest_timestamp = 0
+
+    for root, dirs, files in os.walk(dir_path):
+        for file_name in files + dirs:
+            file_path = os.path.join(root, file_name)
+            file_timestamp = os.path.getmtime(file_path)
+
+            if file_timestamp > latest_timestamp:
+                latest_timestamp = file_timestamp
+
+    return datetime.fromtimestamp(latest_timestamp)
+
+
 def get_dir_size(dir_path):
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(dir_path):
@@ -104,14 +118,14 @@ try:
             src = src_folder + "/" + file
             dst = bk_folder + "/" + file
             if os.path.isfile(dst):
-                if os.path.getsize(src) > os.path.getsize(dst) or os.stat(src).st_mtime != os.stat(dst).st_mtime:
+                if os.path.getsize(src) != os.path.getsize(dst) or get_last_modified_date(src) != get_last_modified_date(dst):
                     os.remove(dst)
                     shutil.copy2(src,
                                  dst)
 
                     log_print_update()
             else:
-                if get_dir_size(src) > get_dir_size(dst) or os.stat(src).st_mtime != os.stat(dst).st_mtime:
+                if get_dir_size(src) != get_dir_size(dst) or get_last_modified_date(src) != get_last_modified_date(dst):
                     shutil.rmtree(dst)
                     shutil.copytree(src,
                                     dst)
